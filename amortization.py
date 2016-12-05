@@ -29,7 +29,7 @@ def main():
     pmt = calculate_pmt(beginning_balance)
     for i in range(0,LOAN_LENGTH*12):
         new_row = []
-        new_row.append(i + 1) #month
+        new_row.append(i + 1) #month number
         new_row.append(beginning_balance)
         new_row.append(pmt)
         interest = beginning_balance*(INTEREST_RATE/12)
@@ -37,9 +37,21 @@ def main():
         principal = pmt - interest
         new_row.append(principal)
         ending_balance = beginning_balance - principal
+        if i == LOAN_LENGTH*12 - 1:
+            ending_balance = 0 #account for maturity
         new_row.append(ending_balance)
         schedule.append(new_row)
         beginning_balance = ending_balance
+    #calculate totals
+    total_row = []
+    total_row.append("TOTAL")
+    total_row.append(" ")
+    col_totals = [ sum(x) for x in zip(*schedule) ]
+    total_row.append(col_totals[2]) #PMT sum
+    total_row.append(col_totals[3]) #Interest sum
+    total_row.append(col_totals[4]) #Principal sum
+    total_row.append(" ")
+    schedule.append(total_row)
 
     headers = ["Month", "Beginning Balance", "PMT", "Interest", "Principal", "Ending Balance"]
     print tabulate(schedule, headers=headers)
